@@ -31,14 +31,14 @@ function seedDB() {
       const userIds = users.map(user => user._id)
       const topicIds = topics.map(topic => topic._id)
       articlesData.forEach(article => {
-        article.votes: faker.random.number();
+        article.votes = faker.random.number();
         article.created_by = sample(userIds);
         article.belongs_to = sample(topicIds);
       })
       return Promise.all([topics, users, Articles.insertMany(articlesData)])
     })
     .then(([topics, users, articles]) => {
-      let count = 15;
+      let count = 200;
       let articleId = articles.map(article => article._id)
       let personId = users.map(user => user._id)
       let manyComments = [];
