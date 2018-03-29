@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const faker = require('faker');
 const Articles = require('../models/articles');
 const Comments = require('../models/comments');
-const Users = require('../models/users');
+const users = require('../models/users');
 
 function getArticles(req, res, next) {
   Articles.find()
@@ -20,22 +20,21 @@ function getCommentsByArticleId(req, res, next) {
 }
 
 function addComment(req, res, next) {
-  let id = req.params.article_id;
-  let reqBody = req.body
-  let post = new Comments({
-    body: reqBody.comment,
-    belongs_to: id,
-    created_at: parseInt(new Date().getTime()),
-    votes: faker.random.number(),
-    created_by: faker.name.findName()
-  })
-  post.save((err) => {
-    if (err) throw err;
-    res.send('Comment posted!');
-  })
+  users.findOne()
+    .then(user => {
+      return new Comments({
+        body: req.body.comment,
+        created_by: user._id,
+        belongs_to: req.params.article_id
+      }).save()
+    })
+    .then(comment => {
+      res.status(201).json(comment)
+    })
 }
 
-function updateVote(req, res, next) {
+
+function updateArticleVote(req, res, next) {
   let id = req.params.article_id;
   let query = req.query;
   Articles.findById(id)
@@ -53,4 +52,4 @@ function updateVote(req, res, next) {
     })
 }
 
-module.exports = { getArticles, getCommentsByArticleId, addComment, updateVote };
+module.exports = { getArticles, getCommentsByArticleId, addComment, updateArticleVote };
