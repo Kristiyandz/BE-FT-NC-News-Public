@@ -6,7 +6,7 @@
   "scripts": {
     "test": "mocha spec",
     "seed:dev": "node seed/seed.js",
-    "seed:prod": "NODE_ENV=production node seed/prod.seed.js",
+    "seed:prod": "NODE_ENV=production node seed/seed.dev.js",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },
