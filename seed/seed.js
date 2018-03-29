@@ -1,4 +1,5 @@
-
+let path;
+if (process.env.NODE_ENV === 'production') path = 'dev'
 //process.env.NODE_ENV = 'test';
 const faker = require('faker');
 const sample = require('lodash.sample');
@@ -11,9 +12,9 @@ const Topics = require('../models/topics');
 const Comments = require('../models/comments');
 const Users = require('../models/users');
 //const testp = require('../seed/devData');
-let topicsData = require('../seed/testData/topics.json')
-let articlesData = require('../seed/testData/articles.json')
-let usersData = require('../seed/testData/users.json')
+let topicsData = require(`../seed/${path}Data/topics.json`)
+let articlesData = require(`../seed/${path}Data/articles.json`)
+let usersData = require(`../seed/${path}Data/users.json`)
 //const config = require('../config')[process.env.NODE_ENV]
 
 
