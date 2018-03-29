@@ -31,6 +31,7 @@ function seedDB() {
       const userIds = users.map(user => user._id)
       const topicIds = topics.map(topic => topic._id)
       articlesData.forEach(article => {
+        article.votes: faker.random.number();
         article.created_by = sample(userIds);
         article.belongs_to = sample(topicIds);
       })
