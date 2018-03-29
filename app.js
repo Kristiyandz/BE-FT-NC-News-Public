@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 mongoose.Promise = Promise;
 const apiRouter = require('./router/apiRouter');
 const bodyParser = require('body-parser');
-const { DB_URL } = require('./config')
+const DB_URL = process.env.DB_URL || require('./config').DB_URL;
+// const { DB_URL } = require('./config')
 console.log(DB_URL)
 mongoose.connect(DB_URL)
   .then(() => {
