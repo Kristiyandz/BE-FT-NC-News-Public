@@ -14,6 +14,7 @@ function getTopicsById(req, res, next) {
     .then((topic) => {
       res.send({ topic });
     })
+    .catch(next)
 }
 
 module.exports = { getTopics, getTopicsById };

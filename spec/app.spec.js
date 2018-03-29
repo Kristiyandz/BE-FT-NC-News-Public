@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 //mongoose.Promise = Promise;
 const request = require('supertest')(app);
 const { expect } = require('chai');
-const { DB_URL } = require('../config/test').test;
+const { DB_URL } = require('../config/test');
 const seedDB = require('../seed/seed');
 const Comments = require('../models/comments');
 
@@ -30,8 +30,9 @@ describe('/api', () => {
         .get('/api/topics')
         .expect(200)
         .then(result => {
-          expect(result.body[0].slug).to.equal('mitch');
+          expect(result.body.topics[0].slug).to.equal('mitch');
         })
+
     })
   })
   describe('GET /api/topics/:topic_id', () => {
@@ -40,7 +41,7 @@ describe('/api', () => {
         .get(`/api/topics/${topics[0]._id}`)
         .expect(200)
         .then(result => {
-          expect(result.body.slug).to.eql('mitch');
+          expect(result.body.topic.slug).to.eql('mitch');
         })
     })
   })

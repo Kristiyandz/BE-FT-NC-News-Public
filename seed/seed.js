@@ -1,5 +1,6 @@
 let path;
 if (process.env.NODE_ENV === 'production') path = 'dev'
+else path = 'test';
 //process.env.NODE_ENV = 'test';
 const faker = require('faker');
 const sample = require('lodash.sample');

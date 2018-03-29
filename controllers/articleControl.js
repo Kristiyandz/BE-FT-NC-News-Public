@@ -9,6 +9,7 @@ function getArticles(req, res, next) {
     .then((articles) => {
       res.send(articles);
     })
+    .catch(next)
 }
 
 function getCommentsByArticleId(req, res, next) {
@@ -17,6 +18,7 @@ function getCommentsByArticleId(req, res, next) {
     .then((comment) => {
       res.send(comment);
     })
+    .catch(next)
 }
 
 function addComment(req, res, next) {
@@ -31,6 +33,7 @@ function addComment(req, res, next) {
     .then(comment => {
       res.status(201).json(comment)
     })
+    .catch(next)
 }
 
 
@@ -50,6 +53,7 @@ function updateArticleVote(req, res, next) {
       }
       article.save()
     })
+    .catch(next)
 }
 
 module.exports = { getArticles, getCommentsByArticleId, addComment, updateArticleVote };
