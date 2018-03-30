@@ -38,7 +38,7 @@ describe('/api', () => {
   describe('GET /api/topics/:topic_id', () => {
     it('gets all the articles for a certain topic', () => {
       return request
-        .get(`/api/topics/${topics[0]._id}`)
+        .get(`/api/topics/${topics[0]._id}/articles`)
         .expect(200)
         .then(result => {
           expect(result.body.topic.slug).to.eql('mitch');

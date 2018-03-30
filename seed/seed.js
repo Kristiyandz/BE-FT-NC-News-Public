@@ -39,6 +39,7 @@ function seedDB() {
     })
     .then(([topics, users, articles]) => {
       let count = 200;
+      let commentCount = 0;
       let articleId = articles.map(article => article._id)
       let personId = users.map(user => user._id)
       let manyComments = [];

@@ -16,7 +16,7 @@ app.use('/api', apiRouter);
 
 app.use('/*', (req, res, next) => next({ status: 404 }));
 app.use((err, req, res, next) => {
-  if (err.status === 404) res.status(404).send({ messaeg: 'Bad request!' });
+  if (err.status === 404) res.status(404).send({ message: 'Page not found!' });
   next(err);
 });
 

@@ -4,12 +4,33 @@ const Articles = require('../models/articles');
 const Comments = require('../models/comments');
 const users = require('../models/users');
 
+function createCommentObj(comments) {
+  return comments.reduce((obj, comment) => {
+    obj[comment.belongs_to] = (obj[comment.belongs_to]) ? obj[comment.belongs_to] + 1 : 1;
+    return obj;
+  }, {})
+}
+
 function getArticles(req, res, next) {
-  Articles.find()
-    .then((articles) => {
-      res.send(articles);
+  return Articles.find().lean()
+    .then(articles => {
+      return Promise.all([Comments.find(), articles]);
     })
-    .catch(next)
+    .then(([comments, articles]) => {
+      return Promise.all([createCommentObj(comments), articles])
+    })
+    .then(([commentObj, articles]) => {
+      return Promise.all([articles.map(article => {
+        article['comment_count'] = commentObj[article._id] || 0;
+        return article
+      })])
+    })
+    .then(([articles]) => {
+      res.send({ articles })
+    })
+    .catch(err => {
+      next({ err: err, msg: 'articles not found' })
+    })
 }
 
 function getCommentsByArticleId(req, res, next) {
@@ -38,22 +59,21 @@ function addComment(req, res, next) {
 
 
 function updateArticleVote(req, res, next) {
-  let id = req.params.article_id;
-  let query = req.query;
-  Articles.findById(id)
-    .then((article) => {
-      if (query.vote === 'down') {
-        console.log(article.votes);
-        article.votes -= 1;
-        res.send(article);
-      } else if (query.vote === 'up') {
-        article.votes += 1;
-        console.log(article.votes);
-        res.send(article);
-      }
-      article.save()
-    })
-    .catch(next)
+  let articleId = req.params.article_id;
+  if (req.query.vote === "up") {
+    Articles.findByIdAndUpdate(articleId, { $inc: { votes: 1 } }, { new: true })
+      .then(updatedArticle => {
+        res.status(200).send(updatedArticle)
+      })
+      .catch(err => next({ status: 400, message: `Unable to up vote article with id ${articleId}`, error: err }))
+  }
+  if (req.query.vote === "down") {
+    Articles.findByIdAndUpdate(articleId, { $inc: { votes: -1 } }, { new: true })
+      .then(updatedArticle => {
+        res.send(updatedArticle)
+      })
+      .catch(err => next({ status: 400, message: `Unable to up vote article with id ${articleId}`, error: err }))
+  }
 }
 
 module.exports = { getArticles, getCommentsByArticleId, addComment, updateArticleVote };
