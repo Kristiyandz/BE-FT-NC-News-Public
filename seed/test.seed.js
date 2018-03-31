@@ -1,7 +1,7 @@
 process.env.NODE_ENV = "test";
 const mongoose = require("mongoose");
 mongoose.Promise = Promise;
-const { DB_URL } = require('../config/test').test;
+const { DB_URL } = require('../config/test');
 const seedDB = require('./seed');
 
 mongoose

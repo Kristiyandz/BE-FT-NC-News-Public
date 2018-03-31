@@ -1,17 +1,15 @@
 process.env.NODE_ENV = 'test';
-//const faker = require('faker');
 const app = require('../app');
 const mongoose = require('mongoose');
-//mongoose.Promise = Promise;
 const request = require('supertest')(app);
 const { expect } = require('chai');
 const { DB_URL } = require('../config/test');
 const seedDB = require('../seed/seed');
 const Comments = require('../models/comments');
 
-// const Topic = require('../models/topics');
-// const Article = require('../models/topics');
-// const Topic = require('../models/topics');
+const topic = require('../models/topics');
+const articles = require('../models/topics');
+const topics = require('../models/topics');
 
 describe('/api', () => {
   let topics, users, articles, comments;
@@ -30,18 +28,22 @@ describe('/api', () => {
         .get('/api/topics')
         .expect(200)
         .then(result => {
-          expect(result.body.topics[0].slug).to.equal('mitch');
+          expect(result.body).to.be.an('object');
+          expect(result.body.topics).to.be.an('array');
+          expect(result.body.topics[0].slug).to.eql('mitch');
         })
-
     })
   })
   describe('GET /api/topics/:topic_id', () => {
     it('gets all the articles for a certain topic', () => {
       return request
-        .get(`/api/topics/${topics[0]._id}/articles`)
+        .get(`/api/topics/${topics[0].slug}/articles`)
         .expect(200)
         .then(result => {
-          expect(result.body.topic.slug).to.eql('mitch');
+          console.log(topics[0]._id)
+          expect(result.body).to.be.an('object');
+          expect(result.body.articles).to.be.an('array');
+          expect(result.body.articles[0].belongs_to.title).to.eql('Mitch')
         })
     })
   })
@@ -51,7 +53,9 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(result => {
-          expect(result.body.length).to.eql(4);
+          expect(result.body).to.be.an('object');
+          expect(result.body.articles).to.be.an('array');
+          expect(result.body.articles.length).to.eql(4);
         })
     })
   });
@@ -61,18 +65,23 @@ describe('/api', () => {
         .get(`/api/articles/${articles[0]._id}/comments`)
         .expect(200)
         .then(result => {
-          expect(result.body.length).to.be.greaterThan(0)
+          expect(result.body).to.be.an('object');
+          expect(result.body.comments).to.be.an('array');
+          expect(result.body.comments[0]).to.have.property('body');
+          expect(result.body.comments[0].belongs_to).to.be.an('string');
         })
     })
   })
   describe('POST /api/articles/:article_id/comments', () => {
-    it('get all comments for individual article', () => {
+    it('post a comment', () => {
+      let str_id = articles[0]._id.toString();
       return request
-        .post(`/api/articles/${articles[0]._id}/comments`)
-        .send({ 'comment': 'I like bananas!' })
+        .post(`/api/articles/${articles[0]._id}/comments?user=Butter_Bridge`)
+        .send({ "comment": "new test comment", "belongs_to": users._id })
         .expect(201)
         .then(result => {
-          expect(result.body.body).to.eql('I like bananas!');
+          expect(result.body).to.be.an('object');
+          expect(result.body.body).to.eql('new test comment');
         })
     })
   })

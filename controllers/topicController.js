@@ -4,47 +4,33 @@ const Articles = require('../models/articles');
 const Comments = require('../models/comments');
 
 function getTopics(req, res, next) {
-  Topics.find((err, topics) => {
-    res.status(200).send({ topics })
-  })
-}
-
-function getTopicsById(req, res, next) {
-  let id = req.params.topic_id;
-  Topics.findById(id)
-    .then((topic) => {
-      res.send({ topic });
+  Topics.find()
+    .lean()
+    .then(topics => {
+      res.status(200).send({ topics })
     })
     .catch(next)
 }
 
-function createCommentObj(comments) {
-  return comments.reduce((obj, comment) => {
-    obj[comment.belongs_to] = (obj[comment.belongs_to]) ? obj[comment.belongs_to] + 1 : 1;
-    return obj;
-  }, {})
-}
+// function getTopicsById(req, res, next) {
+//   let id = req.params.topic_id;
+//   Topics.findById(id)
+//     .then((topic) => {
+//       res.send({ topic });
+//     })
+//     .catch(next)
+// }
 
 function getArticlesByTopicId(req, res, next) {
-  let topic = req.params.topic_id
-  return Articles.find({ belongs_to: topic }).lean()
-    .then(recievedArticles => {
-      return Promise.all([Comments.find(), recievedArticles]);
+  let id = req.params.topic_id;
+  return Topics.findOne({ slug: id })
+    .then(topic => {
+      return Articles.find({ belongs_to: topic._id })
+        .populate("belongs_to", "title -_id")
+        .populate("created_by", "username -_id");
     })
-    .then(([comments, articles]) => {
-      return Promise.all([createCommentObj(comments), articles])
-    })
-    .then(([commentObj, articles]) => {
-      console.log(commentObj);
-      return Promise.all([articles.map(article => {
-        article['comment_count'] = commentObj[article._id] || 0;
-        return article
-      })])
-    })
-    .then(([articles]) => {
-      res.send({ articles })
-    })
+    .then(articles => res.send({ articles }))
     .catch(next)
 }
 
-module.exports = { getTopics, getArticlesByTopicId, getTopicsById };
+module.exports = { getTopics, getArticlesByTopicId };

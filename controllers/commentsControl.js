@@ -2,12 +2,10 @@ const mongoose = require('mongoose');
 let Comments = require('../models/comments');
 //const Users = require('../models/users');
 
+
 function updateComments(req, res, next) {
   let id = req.params.comment_id;
-  console.log(id);
   let query = req.query;
-  console.log(id);
-  console.log(query);
   Comments.findById(id)
     .then((comment) => {
       if (query.vote === 'down') {
@@ -21,6 +19,8 @@ function updateComments(req, res, next) {
     })
     .catch(next);
 }
+
+
 
 function deleteComment(req, res, next) {
   let id = req.params.comment_id;
