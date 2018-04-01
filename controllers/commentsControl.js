@@ -7,19 +7,20 @@ let Users = require('../models/users');
 
 function getAllComments(req, res, next) {
   return Comments.find()
+    .lean()
     .populate('belongs_to', 'title -_id')
     .populate('created_by', 'username -_id')
     .then(comments => {
-      // let commentsArray = comments.map(comment => {
-      //   console.log(comment);
+      // let objectComments = { data: comments };
+      // let arrayOfComments = [objectComments]
+      // let result = arrayOfComments[0].data.map(comment => {
+      //   console.log(comment.belongs_to.title);
       //   comment.belongs_to = comment.belongs_to.title;
       //   comment.created_by = comment.created_by.username;
       //   return comment;
       // })
-      // console.log(commentsArray);
       res.status(200).send({ comments })
     })
-
     .catch(next)
 }
 
@@ -35,15 +36,21 @@ function updateComments(req, res, next) {
   }
   voteValue = vote === 'up' ? 1 : -1
   Comments.findByIdAndUpdate({ _id: comment_id }, { $inc: { votes: voteValue } }, { new: true })
+    .lean()
     .populate('created_by', 'username -_id')
     .populate('belongs_to', 'title -_id')
     .then(comment => {
-      res.status(200).send(comment)
+      let commentArr = [comment];
+      const result = commentArr.map(post => {
+        post.belongs_to = post.belongs_to.title;
+        post.created_by = post.created_by.username;
+        return post;
+      })
+      res.status(200).send({ comment })
     })
     .catch(err => {
-      console.log(err);
       if (err.name === 'CastError')
-        res.send({ message: 'Invalid comment ID' })
+        res.status(400).send({ message: 'Invalid comment ID' })
     })
 }
 
