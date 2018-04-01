@@ -9,11 +9,6 @@ function getArticleById(req, res, next) {
     .populate('created_by', 'username -_id')
     .populate('belongs_to', 'title -_id')
     .then(article => {
-      if (!article) {
-        let error_msg = new Error('Article not found, enter valid article id!')
-        error_msg.name = 'Error';
-        throw error;
-      }
       let articleArray = [article];
       let result = articleArray.map(post => {
         post.created_by = post.created_by.username;
@@ -23,13 +18,8 @@ function getArticleById(req, res, next) {
       res.status(200).json({ result })
     })
     .catch(err => {
-      if (err.name === 'Error') {
-        return next({ code: 1, msg: err.message })
-      }
-      if (err.name === 'CastError') {
-        return next({ code: 1, msg: 'Invalid article ID' })
-      }
-      next(err)
+      console.log(err.name);
+      res.send({ msg: 'Invalid article ID' })
     })
 }
 
@@ -39,10 +29,10 @@ function getArticles(req, res, next) {
     .populate("belongs_to", "title -_id")
     .populate("created_by", "username -_id")
     .then(articles => {
-      const promises = articles.map(article => {
+      const query_promises = articles.map(article => {
         return Comments.find({ belongs_to: article._id }).count();
       });
-      return Promise.all([articles, ...promises]);
+      return Promise.all([articles, ...query_promises]);
     })
     .then(([articles, ...counts]) => {
       return articles.map((article) => {
@@ -100,7 +90,6 @@ function postComment(req, res, next) {
 function updateArticleVote(req, res, next) {
   const { vote } = req.query;
   let article_id = req.params.article_id;
-  console.log(article_id);
   let voteValue = 0;
   if (vote !== 'up' && vote !== 'down') {
     vote = 0;
