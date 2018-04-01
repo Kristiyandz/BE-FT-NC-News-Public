@@ -40,10 +40,18 @@ describe('/api', () => {
         .get(`/api/topics/${topics[0].slug}/articles`)
         .expect(200)
         .then(result => {
-          console.log(topics[0]._id)
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles[0].belongs_to.title).to.eql('Mitch')
+        })
+    })
+    it('return error message when the topic ID is not valid', () => {
+      return request
+        .get('/api/topics/1234')
+        .expect(404)
+        .then(result => {
+          expect(result.status).to.eql(404);
+          expect(result.text).to.be.a('string');
         })
     })
   })
@@ -56,6 +64,15 @@ describe('/api', () => {
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles.length).to.eql(4);
+        })
+    })
+    it('return error message when something else is passed after/api/', () => {
+      return request
+        .get('/api/abc123')
+        .expect(404)
+        .then(result => {
+          expect(result.status).to.eql(404)
+          expect(result.text).to.eql('{"message":"Page not found!"}')
         })
     })
   });
@@ -74,7 +91,6 @@ describe('/api', () => {
   })
   describe('POST /api/articles/:article_id/comments', () => {
     it('post a comment', () => {
-      let str_id = articles[0]._id.toString();
       return request
         .post(`/api/articles/${articles[0]._id}/comments?user=Butter_Bridge`)
         .send({ "comment": "new test comment", "belongs_to": users._id })
