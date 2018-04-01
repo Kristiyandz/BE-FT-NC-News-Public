@@ -88,6 +88,15 @@ describe('/api', () => {
           expect(result.body.comments[0].belongs_to).to.be.an('string');
         })
     })
+    it("returns an error message for incorrecti ID", () => {
+      return request
+        .get(`/api/articles/123abc/comments`)
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400);
+          expect(result.text).to.eql('{"message":"Invalid article ID, failed to fetch comments."}');
+        });
+    });
   })
   describe('POST /api/articles/:article_id/comments', () => {
     it('post a comment', () => {
@@ -98,6 +107,76 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(result.body.body).to.eql('new test comment');
+        })
+    })
+    it("returns an error message when posting a comment for invalid article id or missing query", () => {
+      return request
+        .post(`/api/articles/123banana/comments?username=Butter_Bridge`)
+        .send({ comment: "Hellow World" })
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400)
+          expect(result.text).to.eql('{"message":"Either article ID is invalid or the query is not complet. For complete query please provide ?user=username."}');
+        });
+    });
+  })
+  describe('PUT /api/articles/:article_id', () => {
+    it('increments article vote by 1', () => {
+      let votes = articles[0].votes;
+      // console.log(votes);
+      return request
+        .put(`/api/articles/${articles[0]._id}?vote=up`)
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(votes).to.eql(articles[0].votes)
+        })
+    })
+    it('decrements article vote by 1', () => {
+      let votes = articles[0].votes;
+      // console.log(votes);
+      return request
+        .put(`/api/articles/${articles[0]._id}?vote=down`)
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(votes).to.eql(articles[0].votes)
+        })
+    })
+  })
+  describe('PUT /api/comments/:comment_id', () => {
+    it('increments comment vote by 1', () => {
+      let votes = comments[0].votes;
+      // console.log(votes);
+      return request
+        .put(`/api/comments/${comments[0]._id}?vote=up`)
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(votes).to.eql(comments[0].votes)
+        })
+    })
+    it('decrements a comment vote by 1', () => {
+      let votes = comments[0].votes;
+      // console.log(votes);
+      return request
+        .put(`/api/comments/${comments[0]._id}?vote=down`)
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(votes).to.eql(comments[0].votes)
+        })
+    })
+
+  })
+  describe('GET /api/comments', () => {
+    it('get all comments', () => {
+      return request
+        .get('/api/comments')
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(result.body.comments).to.be.an('array');
         })
     })
   })

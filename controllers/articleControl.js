@@ -1,6 +1,8 @@
 const Articles = require('../models/articles');
 const Comments = require('../models/comments');
 const Users = require('../models/users');
+let isEmpty = require('lodash.isempty');
+
 
 function getArticleById(req, res, next) {
   let id = req.params.article_id;
@@ -64,6 +66,9 @@ function getCommentsByArticleId(req, res, next) {
       })
       res.status(200).send({ comments })
     })
+    .catch(err => {
+      res.status(400).send({ message: 'Invalid article ID, failed to fetch comments.' })
+    })
 }
 
 function postComment(req, res, next) {
@@ -82,6 +87,9 @@ function postComment(req, res, next) {
     .then(result => {
       res.status(201).send(result)
     })
+    .catch(err => {
+      res.status(400).send({ message: 'Either article ID is invalid or the query is not complet. For complete query please provide ?user=username.' })
+    })
 }
 
 
@@ -91,6 +99,9 @@ function updateArticleVote(req, res, next) {
   const { vote } = req.query;
   let article_id = req.params.article_id;
   let voteValue = 0;
+  if (isEmpty(req.query)) {
+    res.send({ message: 'Please Provide query' });
+  }
   if (vote !== 'up' && vote !== 'down') {
     vote = 0;
   }
