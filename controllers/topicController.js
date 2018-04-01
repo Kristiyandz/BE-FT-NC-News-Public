@@ -12,15 +12,6 @@ function getTopics(req, res, next) {
     .catch(next)
 }
 
-// function getTopicsById(req, res, next) {
-//   let id = req.params.topic_id;
-//   Topics.findById(id)
-//     .then((topic) => {
-//       res.send({ topic });
-//     })
-//     .catch(next)
-// }
-
 function getArticlesByTopicId(req, res, next) {
   let id = req.params.topic_id;
   return Topics.findOne({ slug: id })
@@ -29,7 +20,9 @@ function getArticlesByTopicId(req, res, next) {
         .populate("belongs_to", "title -_id")
         .populate("created_by", "username -_id");
     })
-    .then(articles => res.send({ articles }))
+    .then(articles => {
+      res.status(200).send({ articles })
+    })
     .catch(next)
 }
 
