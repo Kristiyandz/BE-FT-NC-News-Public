@@ -4,6 +4,33 @@ const Users = require('../models/users');
 let isEmpty = require('lodash.isempty');
 
 
+function getArticles(req, res, next) {
+  return Articles.find()
+    .populate("belongs_to", "title -_id")
+    .populate("created_by", "username -_id")
+    .then(articles => {
+      const query_promises = articles.map(article => {
+        return Comments.find({ belongs_to: article._id }).count();
+      });
+      return Promise.all([articles, ...query_promises]);
+    })
+    .then(([articles, ...counts]) => {
+      return articles.map((article, i) => {
+        return {
+          title: article.title,
+          body: article.body,
+          topic: article.belongs_to.title,
+          created_by: article.created_by.username,
+          votes: article.votes,
+          comments: counts[i],
+          _id: article._id
+        };
+      });
+    })
+    .then(articles => res.send({ articles }))
+    .catch(next);
+}
+
 function getArticleById(req, res, next) {
   let id = req.params.article_id;
   Articles.findById(id)
@@ -26,32 +53,7 @@ function getArticleById(req, res, next) {
 }
 
 
-function getArticles(req, res, next) {
-  return Articles.find()
-    .populate("belongs_to", "title -_id")
-    .populate("created_by", "username -_id")
-    .then(articles => {
-      const query_promises = articles.map(article => {
-        return Comments.find({ belongs_to: article._id }).count();
-      });
-      return Promise.all([articles, ...query_promises]);
-    })
-    .then(([articles, ...counts]) => {
-      return articles.map((article) => {
-        return {
-          title: article.title,
-          body: article.body,
-          topic: article.belongs_to.title,
-          created_by: article.created_by.username,
-          votes: article.votes,
-          comments: counts[0],
-          _id: article._id
-        };
-      });
-    })
-    .then(articles => res.send({ articles }))
-    .catch(next);
-}
+
 
 function getCommentsByArticleId(req, res, next) {
   let id = req.params.article_id;
@@ -75,6 +77,9 @@ function postComment(req, res, next) {
   let user_name = req.query.user;
   let article_id = req.params.article_id;
   let comment_body = req.body;
+  // if (isEmpty(req.query)) {
+  //   res.status(400).send({ message: 'Please provide a query.' });
+  // }
   Users.find({ username: req.query.user })
     .then(user => {
       let userID = user[0]._id;
@@ -88,7 +93,7 @@ function postComment(req, res, next) {
       res.status(201).send(result)
     })
     .catch(err => {
-      res.status(400).send({ message: 'Either article ID is invalid or the query is not complet. For complete query please provide ?user=username.' })
+      res.status(400).send({ message: 'Invalid article ID or missing query.' })
     })
 }
 
@@ -106,12 +111,24 @@ function updateArticleVote(req, res, next) {
     vote = 0;
   }
   voteValue = vote === 'up' ? 1 : -1
-  console.log(voteValue);
   Articles.findByIdAndUpdate({ _id: article_id }, { $inc: { votes: voteValue } }, { new: true })
+    .lean()
+    .populate('created_by', 'username -_id')
+    .populate('belongs_to', 'title -_id')
     .then(article => {
-      res.status(200).send(article)
+      let updatedArr = [article];
+      let result = updatedArr.map(post => {
+        post.created_by = post.created_by.username;
+        post.belongs_to = post.belongs_to.title;
+        return post;
+      })
+      res.status(200).send({ article });
     })
-    .catch(next)
+    .catch(err => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Invalid article ID' });
+      }
+    })
 }
 
 module.exports = { getArticleById, getArticles, getCommentsByArticleId, updateArticleVote, postComment };
