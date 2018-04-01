@@ -3,13 +3,13 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const request = require('supertest')(app);
 const { expect } = require('chai');
-const { DB_URL } = require('../config/test');
+// const { DB_URL } = require('../config/test');
 const seedDB = require('../seed/seed');
-const Comments = require('../models/comments');
+// const Comments = require('../models/comments');
 
-const topic = require('../models/topics');
-const articles = require('../models/topics');
-const topics = require('../models/topics');
+// const topic = require('../models/topics');
+// const articles = require('../models/topics');
+// const topics = require('../models/topics');
 
 describe('/api', () => {
   let topics, users, articles, comments;
@@ -36,6 +36,8 @@ describe('/api', () => {
   })
   describe('GET /api/topics/:topic_id', () => {
     it('gets all the articles for a certain topic', () => {
+      // The test below will fail sometimes when the tests are run
+      // most of the times it passes, not sure why
       return request
         .get(`/api/topics/${topics[0].slug}/articles`)
         .expect(200)
@@ -50,7 +52,7 @@ describe('/api', () => {
         .get('/api/topics/1234')
         .expect(404)
         .then(result => {
-          expect(result.status).to.eql(404);
+          expect(result.status).to.eql(404)
           expect(result.text).to.be.a('string');
         })
     })
@@ -85,7 +87,7 @@ describe('/api', () => {
           expect(result.body).to.be.an('object');
           expect(result.body.comments).to.be.an('array');
           expect(result.body.comments[0]).to.have.property('body');
-          expect(result.body.comments[0].belongs_to).to.be.an('string');
+          expect(result.body.comments[0].belongs_to).to.be.a('string');
         })
     })
     it("returns an error message for incorrecti ID", () => {
@@ -116,7 +118,7 @@ describe('/api', () => {
         .expect(400)
         .then(result => {
           expect(result.status).to.eql(400)
-          expect(result.text).to.eql('{"message":"Either article ID is invalid or the query is not complet. For complete query please provide ?user=username."}');
+          expect(result.text).to.eql('{"message":"Invalid article ID or missing query."}');
         });
     });
   })
@@ -128,6 +130,7 @@ describe('/api', () => {
         .put(`/api/articles/${articles[0]._id}?vote=up`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(articles[0].votes)
         })
@@ -139,8 +142,30 @@ describe('/api', () => {
         .put(`/api/articles/${articles[0]._id}?vote=down`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(articles[0].votes)
+        })
+    })
+    it('send error message for invalid article id', () => {
+      return request
+        .put(`/api/articles/1234bananasabc?vote=down`)
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400);
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"message":"Invalid article ID"}')
+        })
+    })
+  })
+  describe('GET /api/comments', () => {
+    it('get all comments', () => {
+      return request
+        .get('/api/comments')
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(result.body.comments).to.be.an('array');
         })
     })
   })
@@ -167,16 +192,14 @@ describe('/api', () => {
           expect(votes).to.eql(comments[0].votes)
         })
     })
-
-  })
-  describe('GET /api/comments', () => {
-    it('get all comments', () => {
+    it('send error message for invalid comment id', () => {
       return request
-        .get('/api/comments')
-        .expect(200)
+        .put(`/api/comments/1234bananasabc?vote=down`)
+        .expect(400)
         .then(result => {
+          expect(result.status).to.eql(400);
           expect(result.body).to.be.an('object');
-          expect(result.body.comments).to.be.an('array');
+          expect(result.text).to.eql('{"message":"Invalid comment ID"}')
         })
     })
   })
@@ -191,6 +214,4 @@ describe('/api', () => {
         })
     })
   });
-
-
 });
