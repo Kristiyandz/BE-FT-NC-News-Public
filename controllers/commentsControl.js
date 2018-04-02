@@ -7,7 +7,6 @@ let Users = require('../models/users');
 
 function getAllComments(req, res, next) {
   return Comments.find()
-    .lean()
     .populate('belongs_to', 'title -_id')
     .populate('created_by', 'username -_id')
     .then(comments => {
@@ -22,6 +21,31 @@ function getAllComments(req, res, next) {
       res.status(200).send({ comments })
     })
     .catch(next)
+}
+
+function getCommentsById(req, res, next) {
+  let id = req.params.comment_id;
+  Comments.findById(id)
+    .lean()
+    .populate('belongs_to', 'title -_id')
+    .populate('created_by', 'username -_id')
+    .then(comment => {
+      if (comment === null) {
+        res.status(400).send({ message: 'Comment not found!' });
+      }
+      let singleCommentArr = [comment];
+      let result = singleCommentArr.map(post => {
+        post.belongs_to = post.belongs_to.title;
+        post.created_by = post.created_by.username;
+        return post;
+      });
+      res.status(200).send({ comment });
+    })
+    .catch(err => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Invalid comment ID!' });
+      }
+    });
 }
 
 function updateComments(req, res, next) {
@@ -57,13 +81,18 @@ function updateComments(req, res, next) {
 
 
 function deleteComment(req, res, next) {
-  let id = req.params.comment_id;
-  Comments.findByIdAndRemove(id)
-    .then(() => {
-      res.status(202).send({ comment_id: id, status: 'deleted' })
+  Comments.deleteOne({ _id: req.params.comment_id })
+    .then(result => {
+      if (result.n === 0) {
+        res.status(400).send({ message: 'Comment not found!' });
+      }
+      res.status(200).send({ msg: 'Comment Deleted!' });
     })
-    .catch(next)
-
+    .catch(err => {
+      if (err.name === 'CastError') {
+        res.status(400).send({ message: 'Invalid comment ID.' });
+      }
+    })
 }
 
-module.exports = { getAllComments, updateComments, deleteComment };
+module.exports = { getAllComments, getCommentsById, updateComments, deleteComment };
