@@ -9,10 +9,10 @@ function getArticles(req, res, next) {
     .populate("belongs_to", "title -_id")
     .populate("created_by", "username -_id")
     .then(articles => {
-      const query_promises = articles.map(article => {
+      const comments_counts = articles.map(article => {
         return Comments.find({ belongs_to: article._id }).count();
       });
-      return Promise.all([articles, ...query_promises]);
+      return Promise.all([articles, ...comments_counts]);
     })
     .then(([articles, ...counts]) => {
       return articles.map((article, i) => {

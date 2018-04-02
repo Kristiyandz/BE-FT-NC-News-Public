@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>NC News App</title>
+  <style>
+    * {
+      font-family: Verdana, Camria, Tahoma, sans-serif;
+      font-weight: 400;
+    }
+
+    h1 {
+      font-family: Verdana, Geneva, Tahoma, sans-serif;
+    }
+
+    code {
+      color: #c7254e !important;
+      background-color: #f9f2f4;
+      border-radius: 4px;
+      padding: 2px 2px;
+    }
+  </style>
+  <style>
+    #preview code {
+      color: #c1002e !important;
+    }
+  </style>
+</head>
+
+<body id="preview">
+  <h1>Northcoders News</h1>
+  <h1>API Endpoints</h1>
+
+  <h3>GET
+    <code>/api</code>
+  </h3>
+  <p>Display all available API endpoints</p>
+
+  <h3>GET
+    <code>/api/topics</code>
+  </h3>
+  <p>Returns a JSON Object with all available topics</p>
+
+  <h3> GET
+    <code>/api/topics/:topic_id/articles</code> </h3>
+  <p>Returns a JSON object containing all articles for a given topic</p>
+
+  <h3> GET
+    <code>/api/articles</code>
+  </h3>
+  <p>Returns a JSON object with all articles</p>
+
+  <h3> GET
+    <code>/api/articles/:article_id/comments</code>
+  </h3>
+  <p>Returns all comments for a single article</p>
+
+  <h3> POST
+    <code>/api/articles/:article_id/comments</code>
+  </h3>
+  <p>Adds a new comment to an article. The route requires a JSON
+    <code>body</code> with a
+    <code>comment</code> key and value pair e.g:
+    <code>{"comment":"This
+    is my new comment"}</code>
+  </p>
+
+  <h3> PUT
+    <code>/api/articles/:article_id</code>
+  </h3>
+  <p>Increments or decrements the
+    <code>vote</code> of an article by one. The route requires a vote query of 'up' or 'down' e.g:
+    <code>http://ncnewsapp.herokuapp.com/api/articles/:article_id?vote=down</code>
+  </p>
+
+  <h3> PUT
+    <code>/api/comments/:comment_id</code>
+  </h3>
+  <p>Increments or decrements the vote of a comment by one. The route requires a vote query of 'up' or 'down' e.g:
+    <code>http://ncnewsapp.herokuapp.com/api/comments/:comment_id?vote=down</code>
+  </p>
+
+  <h3> DELETE
+    <code>/api/comments/:comment_id</code>
+  </h3>
+  <p> This endpoint will find and delete a comment based on it's ID.</p>
+
+  <h3> GET
+    <code>/api/users/:username</code>
+  </h3>
+  <p>Returns a JSON object with the profile data for the provided user.</p>
+
+</body>
+
+</html>

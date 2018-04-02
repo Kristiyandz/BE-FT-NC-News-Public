@@ -12,6 +12,9 @@ mongoose.connect(DB_URL)
     console.log(`connected to DB ${DB_URL}`);
   })
 app.use(bodyParser.json());
+app.get('/', (req, res, next) => {
+  res.sendFile('views/index.html', { root: `${process.cwd()}` });
+})
 app.use('/api', apiRouter);
 
 app.use('/*', (req, res, next) => next({ status: 404 }));

@@ -3,22 +3,14 @@ const isEmpty = require('lodash.isempty');
 let Comments = require('../models/comments');
 let Articles = require('../models/articles')
 let Users = require('../models/users');
-//const Users = require('../models/users');
 
 function getAllComments(req, res, next) {
   return Comments.find()
+    .lean()
     .populate('belongs_to', 'title -_id')
     .populate('created_by', 'username -_id')
     .then(comments => {
-      // let objectComments = { data: comments };
-      // let arrayOfComments = [objectComments]
-      // let result = arrayOfComments[0].data.map(comment => {
-      //   console.log(comment.belongs_to.title);
-      //   comment.belongs_to = comment.belongs_to.title;
-      //   comment.created_by = comment.created_by.username;
-      //   return comment;
-      // })
-      res.status(200).send({ comments })
+      res.status(200).send({ comments });
     })
     .catch(next)
 }
