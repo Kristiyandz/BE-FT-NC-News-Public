@@ -21,7 +21,7 @@ describe('/api', () => {
   });
   after(() => {
     return mongoose.disconnect();
-  })
+  });
   describe('GET api/topics', () => {
     it('gets all the topics', () => {
       return request
@@ -31,9 +31,9 @@ describe('/api', () => {
           expect(result.body).to.be.an('object');
           expect(result.body.topics).to.be.an('array');
           expect(result.body.topics[0].slug).to.eql('mitch');
-        })
-    })
-  })
+        });
+    });
+  });
   describe('GET /api/topics/:topic_id', () => {
     it('gets all the articles for a certain topic', () => {
       // The test below will fail sometimes when the tests are run
@@ -45,8 +45,8 @@ describe('/api', () => {
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles[0].belongs_to.title).to.eql('Mitch')
-        })
-    })
+        });
+    });
     it('return error message when the topic ID is not valid', () => {
       return request
         .get('/api/topics/1234')
@@ -54,9 +54,9 @@ describe('/api', () => {
         .then(result => {
           expect(result.status).to.eql(404)
           expect(result.text).to.be.a('string');
-        })
-    })
-  })
+        });
+    });
+  });
   describe('GET /api/articles', () => {
     it('gets all articles', () => {
       return request
@@ -66,8 +66,8 @@ describe('/api', () => {
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles.length).to.eql(4);
-        })
-    })
+        });
+    });
     it('return error message when something else is passed after/api/', () => {
       return request
         .get('/api/abc123')
@@ -75,8 +75,8 @@ describe('/api', () => {
         .then(result => {
           expect(result.status).to.eql(404)
           expect(result.text).to.eql('{"message":"Page not found!"}')
-        })
-    })
+        });
+    });
   });
   describe('GET /api/articles/:article_id/comments', () => {
     it('get all comments for individual article', () => {
@@ -88,8 +88,8 @@ describe('/api', () => {
           expect(result.body.comments).to.be.an('array');
           expect(result.body.comments[0]).to.have.property('body');
           expect(result.body.comments[0].belongs_to).to.be.a('string');
-        })
-    })
+        });
+    });
     it("returns an error message for incorrecti ID", () => {
       return request
         .get(`/api/articles/123abc/comments`)
@@ -99,7 +99,7 @@ describe('/api', () => {
           expect(result.text).to.eql('{"message":"Invalid article ID, failed to fetch comments."}');
         });
     });
-  })
+  });
   describe('POST /api/articles/:article_id/comments', () => {
     it('post a comment', () => {
       return request
@@ -109,8 +109,8 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(result.body.body).to.eql('new test comment');
-        })
-    })
+        });
+    });
     it("returns an error message when posting a comment for invalid article id or missing query", () => {
       return request
         .post(`/api/articles/123banana/comments?username=Butter_Bridge`)
@@ -121,7 +121,7 @@ describe('/api', () => {
           expect(result.text).to.eql('{"message":"Invalid article ID or missing query."}');
         });
     });
-  })
+  });
   describe('PUT /api/articles/:article_id', () => {
     it('increments article vote by 1', () => {
       let votes = articles[0].votes;
@@ -133,8 +133,8 @@ describe('/api', () => {
           expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(articles[0].votes)
-        })
-    })
+        });
+    });
     it('decrements article vote by 1', () => {
       let votes = articles[0].votes;
       // console.log(votes);
@@ -145,8 +145,8 @@ describe('/api', () => {
           expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(articles[0].votes)
-        })
-    })
+        });
+    });
     it('send error message for invalid article id', () => {
       return request
         .put(`/api/articles/1234bananasabc?vote=down`)
@@ -155,9 +155,9 @@ describe('/api', () => {
           expect(result.status).to.eql(400);
           expect(result.body).to.be.an('object');
           expect(result.text).to.eql('{"message":"Invalid article ID"}')
-        })
-    })
-  })
+        });
+    });
+  });
   describe('GET /api/comments', () => {
     it('get all comments', () => {
       return request
@@ -166,9 +166,31 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(result.body.comments).to.be.an('array');
-        })
-    })
-  })
+        });
+    });
+  });
+  describe('GET /api/comments/comment_id', () => {
+    it('gets all comments by ID', () => {
+      return request
+        .get(`/api/comments/${comments[0]._id}`)
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(result.body.comment.belongs_to).to.be.a('string');
+          expect(result.body.comment.created_by).to.be.a('string');
+        });
+    });
+    it('returns error message for invalid comment ID', () => {
+      return request
+        .get(`/api/comments/blah`)
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400);
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"message":"Invalid comment ID!"}');
+        });
+    });
+  });
   describe('PUT /api/comments/:comment_id', () => {
     it('increments comment vote by 1', () => {
       let votes = comments[0].votes;
@@ -179,8 +201,8 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(comments[0].votes)
-        })
-    })
+        });
+    });
     it('decrements a comment vote by 1', () => {
       let votes = comments[0].votes;
       // console.log(votes);
@@ -190,8 +212,8 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(comments[0].votes)
-        })
-    })
+        });
+    });
     it('send error message for invalid comment id', () => {
       return request
         .put(`/api/comments/1234bananasabc?vote=down`)
@@ -200,18 +222,28 @@ describe('/api', () => {
           expect(result.status).to.eql(400);
           expect(result.body).to.be.an('object');
           expect(result.text).to.eql('{"message":"Invalid comment ID"}')
-        })
-    })
-  })
-  describe('/api/comments/:comment_id', () => {
+        });
+    });
+  });
+  describe('DELETE /api/comments/:comment_id', () => {
     it('delete a comment by ID', () => {
-      let length = comments.length - 1;
       return request
         .delete(`/api/comments/${comments[0]._id}`)
-        .expect(202)
-        .then(() => {
-          expect(length).to.eql(comments.length - 1);
-        })
-    })
+        .expect(200)
+        .then((result) => {
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"msg":"Comment Deleted!"}')
+        });
+    });
+    it('return error when passed invalid comment ID', () => {
+      return request
+        .delete(`/api/comments/12345`)
+        .expect(400)
+        .then((result) => {
+          expect(result.status).to.eql(400);
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"message":"Invalid comment ID."}')
+        });
+    });
   });
 });
