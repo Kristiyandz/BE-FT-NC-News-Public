@@ -44,7 +44,7 @@ describe('/api', () => {
         .then(result => {
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
-          expect(result.body.articles[0].belongs_to.title).to.eql('Mitch')
+          expect(result.body.articles[0].belongs_to).to.eql('Mitch')
         });
     });
     it('return error message when the topic ID is not valid', () => {

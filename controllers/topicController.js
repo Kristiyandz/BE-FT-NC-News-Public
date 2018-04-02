@@ -17,11 +17,18 @@ function getArticlesByTopicId(req, res, next) {
   return Topics.findOne({ slug: id })
     .then(topic => {
       return Articles.find({ belongs_to: topic._id })
+        .lean()
         .populate("belongs_to", "title -_id")
-        .populate("created_by", "username -_id");
-    })
-    .then(articles => {
-      res.status(200).send({ articles })
+        .populate("created_by", "username -_id")
+        .then(articles => {
+          let arrOfArticles = [articles]
+          let result = arrOfArticles[0].map(post => {
+            post.created_by = post.created_by.username;
+            post.belongs_to = post.belongs_to.title;
+            return post;
+          });
+          res.status(200).send({ articles })
+        })
     })
     .catch(next)
 }
