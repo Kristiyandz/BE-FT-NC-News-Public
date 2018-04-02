@@ -22,6 +22,18 @@ describe('/api', () => {
   after(() => {
     return mongoose.disconnect();
   });
+  describe('GET / returns an HTML page with all of the endpoints', () => {
+    it('displays an HTML page in the browser', () => {
+      return request
+        .get('/')
+        .expect(200)
+        .then(result => {
+          expect(result.status).to.eql(200);
+          expect(result.text).to.be.a('string');
+          expect(result.type).to.eql('text/html');
+        });
+    });
+  });
   describe('GET api/topics', () => {
     it('gets all the topics', () => {
       return request
