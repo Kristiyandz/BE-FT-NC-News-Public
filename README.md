@@ -18,16 +18,16 @@ This application was build with JavaScript as the main language and combination 
 ## Installation
 
 First you need to download the project.
-Open your terminal and copy and paste the followitn command:
+Open your terminal and copy and paste the following command:
 ```
 git clone https://github.com/Kristiyandz/BE-FT-northcoders-news.git
 ```
-After that we need our depenndencies,
-type the following command to download the package.json file
+After that we need our dependencies.
+Type the following command to download the package.json file
 ```
 npm init -y
 ```
-The rest of the packages we will need we can download with a single command, type the following and save them as dev dependencies with -D at the end.
+The rest of the packages we will need we can download with a single command. Type the following and save them as dev dependencies with -D at the end.
 ```
 npm i mocha chai faker nodemon supertest -D
 ```
@@ -49,15 +49,15 @@ Simply run this command in the terminal to execute the test suite:
 npm t
 ```
 Each test is written to check different endpoints of the API.
-We are testing our code because we want to find out if there are deffects in our code and fix them.
+We are testing our code because we want to find out if there are defects in our code and fix them.
 
 ## Seeding the databases
 
-To seed the developement databse, run this command:
+To seed the development database, run this command:
 ```
 npm run seed:dev
 ```
-To seed a production database on Mlab, do this:
+To seed the production database on Mlab, do this:
 * Create an [MLab](https://mlab.com/) account
 * Open the package.json file and in the "scripts" section add ***seed:prod***, edit the ***<db_url>*** and place your username and password from Mlab.
 
@@ -68,7 +68,7 @@ npm run seed:prod
 ```
 This will update the database hosted on Mlab.
 
-## Deplyoment
+## Deployment
 ### Mlab
 * Create an account on [MLab](https://mlab.com/)
 * Create a new database
