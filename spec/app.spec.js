@@ -246,4 +246,38 @@ describe('/api', () => {
         });
     });
   });
+  describe('GET /api/users', () => {
+    it('get all users', () => {
+      return request
+        .get('/api/users')
+        .expect(200)
+        .then(result => {
+          expect(result.body).to.be.an('object');
+          expect(result.body.users).to.be.an('array');
+        });
+    });
+  });
+  describe('GET /api/users/username', () => {
+    it('get user by username', () => {
+      return request
+        .get(`/api/users/butter_bridge`)
+        .expect(200)
+        .then(result => {
+          expect(result.status).to.eql(200);
+          expect(result.body).to.be.an('object');
+          expect(result.body.user.username).to.eql('butter_bridge');
+          expect(result.body.user.name).to.eql('jonny');
+        });
+    });
+    it('return error message when incorrect username is passed', () => {
+      return request
+        .get('/api/users/gandalf')
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400);
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"message":"Invalud username!"}');
+        });
+    });
+  });
 });
