@@ -1,7 +1,7 @@
 const router = require('express').Router()
-const { getUserById } = require('../controllers/userControl');
+const { getUsers, getUserByUsername } = require('../controllers/userControl');
 
-// router.get('/', getUsers);
-router.get('/:user_id', getUserById);
+router.get('/:username', getUserByUsername);
+router.get('/', getUsers);
 
 module.exports = router;
