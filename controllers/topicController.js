@@ -1,4 +1,3 @@
-const mongoose = require('mongoose');
 const Topics = require('../models/topics');
 const Articles = require('../models/articles');
 const Comments = require('../models/comments');
@@ -9,8 +8,8 @@ function getTopics(req, res, next) {
     .then(topics => {
       res.status(200).send({ topics })
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 function getArticlesByTopicId(req, res, next) {
   let id = req.params.topic_id;
@@ -30,7 +29,7 @@ function getArticlesByTopicId(req, res, next) {
           res.status(200).send({ articles })
         })
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports = { getTopics, getArticlesByTopicId };

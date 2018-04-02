@@ -3,13 +3,7 @@ const app = require('../app');
 const mongoose = require('mongoose');
 const request = require('supertest')(app);
 const { expect } = require('chai');
-// const { DB_URL } = require('../config/test');
 const seedDB = require('../seed/seed');
-// const Comments = require('../models/comments');
-
-// const topic = require('../models/topics');
-// const articles = require('../models/topics');
-// const topics = require('../models/topics');
 
 describe('/api', () => {
   let topics, users, articles, comments;
@@ -48,8 +42,6 @@ describe('/api', () => {
   });
   describe('GET /api/topics/:topic_id', () => {
     it('gets all the articles for a certain topic', () => {
-      // The test below will fail sometimes when the tests are run
-      // most of the times it passes, not sure why
       return request
         .get(`/api/topics/${topics[0].slug}/articles`)
         .expect(200)

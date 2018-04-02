@@ -54,9 +54,7 @@ function seedDB() {
     .then(([topics, users, articles, comments]) => {
       return Promise.all([topics, users, articles, comments])
     })
-
-    .catch(console.error)
-}
-
+    .catch(console.error);
+};
 
 module.exports = seedDB;

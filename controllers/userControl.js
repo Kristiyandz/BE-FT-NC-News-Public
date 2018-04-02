@@ -4,8 +4,8 @@ function getUsers(req, res, next) {
   Users.find()
     .then((users) => {
       res.status(200).send({ users });
-    })
-}
+    });
+};
 
 function getUserByUsername(req, res, next) {
   const user_name = req.params.username;
@@ -19,7 +19,7 @@ function getUserByUsername(req, res, next) {
       });
       res.status(400).send({ message: 'Invalud username!' });
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 module.exports = { getUsers, getUserByUsername };

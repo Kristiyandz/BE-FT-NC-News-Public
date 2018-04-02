@@ -1,8 +1,7 @@
-const mongoose = require('mongoose');
 const isEmpty = require('lodash.isempty');
-let Comments = require('../models/comments');
-let Articles = require('../models/articles')
-let Users = require('../models/users');
+const Comments = require('../models/comments');
+const Articles = require('../models/articles');
+const Users = require('../models/users');
 
 function getAllComments(req, res, next) {
   return Comments.find()
@@ -12,8 +11,8 @@ function getAllComments(req, res, next) {
     .then(comments => {
       res.status(200).send({ comments });
     })
-    .catch(next)
-}
+    .catch(next);
+};
 
 function getCommentsById(req, res, next) {
   let id = req.params.comment_id;
@@ -38,7 +37,7 @@ function getCommentsById(req, res, next) {
         res.status(400).send({ message: 'Invalid comment ID!' });
       }
     });
-}
+};
 
 function updateComments(req, res, next) {
   const { vote } = req.query;
@@ -62,13 +61,13 @@ function updateComments(req, res, next) {
         post.created_by = post.created_by.username;
         return post;
       })
-      res.status(200).send({ comment })
+      res.status(200).send({ comment });
     })
     .catch(err => {
       if (err.name === 'CastError')
         res.status(400).send({ message: 'Invalid comment ID' })
-    })
-}
+    });
+};
 
 
 
@@ -84,7 +83,7 @@ function deleteComment(req, res, next) {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid comment ID.' });
       }
-    })
-}
+    });
+};
 
 module.exports = { getAllComments, getCommentsById, updateComments, deleteComment };

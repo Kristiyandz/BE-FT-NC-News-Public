@@ -29,7 +29,7 @@ function getArticles(req, res, next) {
     })
     .then(articles => res.send({ articles }))
     .catch(next);
-}
+};
 
 function getArticleById(req, res, next) {
   let id = req.params.article_id;
@@ -47,10 +47,9 @@ function getArticleById(req, res, next) {
       res.status(200).json({ result })
     })
     .catch(err => {
-      console.log(err.name);
       res.send({ msg: 'Invalid article ID' })
-    })
-}
+    });
+};
 
 
 
@@ -70,8 +69,8 @@ function getCommentsByArticleId(req, res, next) {
     })
     .catch(err => {
       res.status(400).send({ message: 'Invalid article ID, failed to fetch comments.' })
-    })
-}
+    });
+};
 
 function postComment(req, res, next) {
   let user_name = req.query.user;
@@ -93,9 +92,9 @@ function postComment(req, res, next) {
       res.status(201).send(result)
     })
     .catch(err => {
-      res.status(400).send({ message: 'Invalid article ID or missing query.' })
-    })
-}
+      res.status(400).send({ message: 'Invalid article ID or missing query.' });
+    });
+};
 
 
 
@@ -128,7 +127,7 @@ function updateArticleVote(req, res, next) {
       if (err.name === 'CastError') {
         res.status(400).send({ message: 'Invalid article ID' });
       }
-    })
-}
+    });
+};
 
 module.exports = { getArticleById, getArticles, getCommentsByArticleId, updateArticleVote, postComment };
