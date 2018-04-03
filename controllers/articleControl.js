@@ -27,7 +27,9 @@ function getArticles(req, res, next) {
         };
       });
     })
-    .then(articles => res.send({ articles }))
+    .then(articles => {
+      res.status(200).send({ articles })
+    })
     .catch(next);
 };
 
@@ -44,10 +46,10 @@ function getArticleById(req, res, next) {
         post.belongs_to = post.belongs_to.title;
         return post;
       })
-      res.status(200).json({ result })
+      res.status(200).send({ result })
     })
     .catch(err => {
-      res.send({ msg: 'Invalid article ID' })
+      res.status(400).send({ message: 'Invalid article ID!' })
     });
 };
 

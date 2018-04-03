@@ -43,7 +43,7 @@ The test suite was build using the Mocha test framework, including Chai and Supe
 For more info on the Mocha framework and documentation visit:
 * [Mocha](https://mochajs.org/)
 
-There are 24 written tests in the ***spec*** folder.
+There are 26 written tests in the ***spec*** folder.
 Simply run this command in the terminal to execute the test suite:
 ```
 npm t
@@ -51,6 +51,17 @@ npm t
 Each test is written to check different endpoints of the API.
 We are testing our code because we want to find out if there are defects in our code and fix them.
 
+## Running the app in localhost
+
+To run the app on localhost or Postman, type:
+```
+npm run dev
+```
+The open your browser and insert this line to access the app:
+```
+http://localhost:9090/
+```
+From there you can browse a list of all of the available API endpoints.
 ## Seeding the databases
 
 To seed the development database, run this command:

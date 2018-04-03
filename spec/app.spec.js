@@ -34,6 +34,7 @@ describe('/api', () => {
         .get('/api/topics')
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.topics).to.be.an('array');
           expect(result.body.topics[0].slug).to.eql('mitch');
@@ -46,6 +47,7 @@ describe('/api', () => {
         .get(`/api/topics/${topics[0].slug}/articles`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles[0].belongs_to).to.eql('Mitch')
@@ -67,12 +69,13 @@ describe('/api', () => {
         .get('/api/articles')
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.articles).to.be.an('array');
           expect(result.body.articles.length).to.eql(4);
         });
     });
-    it('return error message when something else is passed after/api/', () => {
+    it('returns error message for incorrect path after /api', () => {
       return request
         .get('/api/abc123')
         .expect(404)
@@ -82,19 +85,43 @@ describe('/api', () => {
         });
     });
   });
+  describe('GET /api/articles/article_id', () => {
+    it('gets an article by ID', () => {
+      return request
+        .get(`/api/articles/${articles[0]._id}`)
+        .expect(200)
+        .then(result => {
+          expect(result.status).to.eql(200);
+          expect(result.body).to.be.an('object');
+          expect(result.body.result[0].belongs_to).to.be.a('string');
+          expect(result.body.result[0].created_by).to.be.a('string');
+        });
+    });
+    it('returns error message for invalid article ID', () => {
+      return request
+        .get(`/api/articles/blah`)
+        .expect(400)
+        .then(result => {
+          expect(result.status).to.eql(400);
+          expect(result.body).to.be.an('object');
+          expect(result.text).to.eql('{"message":"Invalid article ID!"}');
+        });
+    });
+  });
   describe('GET /api/articles/:article_id/comments', () => {
-    it('get all comments for individual article', () => {
+    it('gets all comments for individual article', () => {
       return request
         .get(`/api/articles/${articles[0]._id}/comments`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.comments).to.be.an('array');
           expect(result.body.comments[0]).to.have.property('body');
           expect(result.body.comments[0].belongs_to).to.be.a('string');
         });
     });
-    it("returns an error message for incorrecti ID", () => {
+    it("returns an error message for incorrect article ID", () => {
       return request
         .get(`/api/articles/123abc/comments`)
         .expect(400)
@@ -111,11 +138,12 @@ describe('/api', () => {
         .send({ "comment": "new test comment", "belongs_to": users._id })
         .expect(201)
         .then(result => {
+          expect(result.status).to.eql(201);
           expect(result.body).to.be.an('object');
           expect(result.body.body).to.eql('new test comment');
         });
     });
-    it("returns an error message when posting a comment for invalid article id or missing query", () => {
+    it("returns an error message when posting a comment for invalid article ID or missing query", () => {
       return request
         .post(`/api/articles/123banana/comments?username=Butter_Bridge`)
         .send({ comment: "Hellow World" })
@@ -151,7 +179,7 @@ describe('/api', () => {
           expect(votes).to.eql(articles[0].votes)
         });
     });
-    it('send error message for invalid article id', () => {
+    it('sends error message for invalid article ID', () => {
       return request
         .put(`/api/articles/1234bananasabc?vote=down`)
         .expect(400)
@@ -163,11 +191,12 @@ describe('/api', () => {
     });
   });
   describe('GET /api/comments', () => {
-    it('get all comments', () => {
+    it('gets all comments', () => {
       return request
         .get('/api/comments')
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.comments).to.be.an('array');
         });
@@ -179,6 +208,7 @@ describe('/api', () => {
         .get(`/api/comments/${comments[0]._id}`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.comment.belongs_to).to.be.a('string');
           expect(result.body.comment.created_by).to.be.a('string');
@@ -203,6 +233,7 @@ describe('/api', () => {
         .put(`/api/comments/${comments[0]._id}?vote=up`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(comments[0].votes)
         });
@@ -214,11 +245,12 @@ describe('/api', () => {
         .put(`/api/comments/${comments[0]._id}?vote=down`)
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(votes).to.eql(comments[0].votes)
         });
     });
-    it('send error message for invalid comment id', () => {
+    it('send error message for invalid comment ID', () => {
       return request
         .put(`/api/comments/1234bananasabc?vote=down`)
         .expect(400)
@@ -230,16 +262,17 @@ describe('/api', () => {
     });
   });
   describe('DELETE /api/comments/:comment_id', () => {
-    it('delete a comment by ID', () => {
+    it('deletes a comment by ID', () => {
       return request
         .delete(`/api/comments/${comments[0]._id}`)
         .expect(200)
         .then((result) => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.text).to.eql('{"msg":"Comment Deleted!"}')
         });
     });
-    it('return error when passed invalid comment ID', () => {
+    it('returns error when passed invalid comment ID', () => {
       return request
         .delete(`/api/comments/12345`)
         .expect(400)
@@ -251,18 +284,19 @@ describe('/api', () => {
     });
   });
   describe('GET /api/users', () => {
-    it('get all users', () => {
+    it('gets all users', () => {
       return request
         .get('/api/users')
         .expect(200)
         .then(result => {
+          expect(result.status).to.eql(200);
           expect(result.body).to.be.an('object');
           expect(result.body.users).to.be.an('array');
         });
     });
   });
   describe('GET /api/users/username', () => {
-    it('get user by username', () => {
+    it('gets user by username', () => {
       return request
         .get(`/api/users/butter_bridge`)
         .expect(200)

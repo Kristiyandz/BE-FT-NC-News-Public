@@ -1,7 +1,7 @@
-const isEmpty = require('lodash.isempty');
 const Comments = require('../models/comments');
 const Articles = require('../models/articles');
 const Users = require('../models/users');
+const isEmpty = require('lodash.isempty');
 
 function getAllComments(req, res, next) {
   return Comments.find()
